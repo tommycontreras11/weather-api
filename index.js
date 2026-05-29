@@ -1,5 +1,10 @@
+import "dotenv/config"
 import express from "express"
+import api from "./src/routers/index.js"
 
 const app = express()
 
-app.listen(3000, () => console.log("The server is running on port 3000"))
+app.listen(process.env.PORT, () => console.log(`The server is running on port ${process.env.PORT}`))
+
+app.get("/health", (req, res) => res.json({ healthy: true }))
+app.use("/api", api)
