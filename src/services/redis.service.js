@@ -1,9 +1,15 @@
-import redis from "./../config/redis.js"
+import { getCacheClient } from "./../config/redis.js";
 
-export const getCache = async (key) => await redis.get(key)
+export const getCache = async (key) => {
+  const redis = await getCacheClient();
+  
+  await redis.get(key);
+};
 
 export const setCache = async (key, value, ttl) => {
-    await redis.set(key, JSON.stringify(value), {
-        EX: ttl
-    })
-}
+  const redis = await getCacheClient();
+
+  await redis.set(key, JSON.stringify(value), {
+    EX: ttl,
+  });
+};

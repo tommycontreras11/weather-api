@@ -1,21 +1,25 @@
 // config/redis.js
 
-import { createClient } from "redis"
+import { createClient } from "redis";
 
-const redis = createClient({
-    url: "redis://localhost:6379"
-})
+let client
 
-redis.on('error', err => console.log('Redis Client Error', err));
+export const initRedis = async () => {
+  client = createClient({
+    url: "redis://localhost:6379",
+  });
 
-redis.on("connect", () => {
-    console.log("🔌 Connecting to Redis...")
-})
+  client.on("error", (err) => console.log("Redis Client Error", err));
 
-redis.on("ready", () => {
-    console.log("✅ Redis connected")
-})
+  await client.connect();
 
-await redis.connect();
+  console.log("✅ Redis connected");
+};
 
-export default redis
+export const getCacheClient = () => {
+  if (!client) {
+    throw new Error("Redis not initialized. Call initRedis() first.");
+  }
+
+  return client;
+};
