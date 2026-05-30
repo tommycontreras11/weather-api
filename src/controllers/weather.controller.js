@@ -7,9 +7,9 @@ export const getWeatherByCityController = async (req, res) => {
 
         res.json({
             city: data.address,
-            temperature: data.days[0].temp,
-            humidity: data.days[0].humidity,
-            conditions: data.description
+            temperature: data.currentConditions.temp,
+            humidity: data.currentConditions.humidity,
+            conditions: data.currentConditions.conditions
         })
     } catch (error) {
         res.status(error.status || 500).json({
