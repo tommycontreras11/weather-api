@@ -12,7 +12,7 @@ export const getWeatherByCity = async (city) => {
   }
 
   const response = await fetch(
-    `${process.env.WEATHER_API}/${city}/?key=${process.env.WEATHER_API_KEY}`,
+    `${process.env.WEATHER_API_URL}/${city}/?key=${process.env.WEATHER_API_URL_KEY}`,
   );
 
   const raw = await response.text();

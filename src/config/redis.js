@@ -1,4 +1,4 @@
-// config/redis.js
+import "dotenv/config"
 
 import { createClient } from "redis";
 
@@ -6,7 +6,7 @@ let client
 
 export const initRedis = async () => {
   client = createClient({
-    url: "redis://localhost:6379",
+    url: process.env.REDIS_URL,
   });
 
   client.on("error", (err) => console.log("Redis Client Error", err));

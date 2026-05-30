@@ -1,8 +1,24 @@
 version: "3.9"
 
 services:
+  api:
+    build: .
+    container_name: weather-api
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    restart: unless-stopped
+
   redis:
     image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
     container_name: weather-api-redis
     restart: unless-stopped
     ports:
