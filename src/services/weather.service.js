@@ -1,23 +1,44 @@
-import "dotenv/config"
+import "dotenv/config";
+import { getCache, setCache } from "./redis.service.js";
 
 export const getWeatherByCity = async (city) => {
-  const response = await fetch(
-    `${process.env.WEATHER_API}/${city}/?key=${process.env.WEATHER_API_KEY}`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
-  );
+  const cacheKey = `weather:${city}`;
 
-  const data = await response.json();
+  const cached = await getCache(cacheKey);
 
-  if (!response.ok) {
-    return res.status(response.status).json({
-      message: data.message || "Weather API error",
-      status: response.status,
-    });
+  if (cached) {
+    console.log(`City cached found: ${cacheKey}`);
+    return cached;
   }
 
-  return data
+  const response = await fetch(
+    `${process.env.WEATHER_API}/${city}/?key=${process.env.WEATHER_API_KEY}`,
+  );
+
+  const raw = await response.text();
+
+  let data;
+
+  try {
+    data = JSON.parse(raw);
+  } catch {
+    data = raw; // keep as text
+  }
+
+  if (!response.ok) {
+    // if data === "string" -> for example, the response is like this `data = "Bad API Request: No valid locations..."`
+    // else -> so take the message from the object data or just print "Weather API error" 
+
+    const error = new Error(
+      typeof data === "string" ? data : data.message || "Weather API error",
+    );
+
+    error.status = response.status;
+
+    throw error;
+  }
+
+  await setCache(`weather:${city}`, data, 3600);
+
+  return data;
 };

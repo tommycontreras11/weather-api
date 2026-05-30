@@ -7,7 +7,7 @@ export const getWeatherByCityController = async (req, res) => {
 
         res.json(data)
     } catch (error) {
-        res.status(500).json({
+        res.status(error.status || 500).json({
             message: "Failed to fetch weather data",
             error: error.message
         })
